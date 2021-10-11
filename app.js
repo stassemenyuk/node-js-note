@@ -55,6 +55,25 @@ let NOTES = [
 ];
 
 let notesCounter = 7;
+function countNotes() {
+  let tasks = (rnd = ideas = 0);
+  NOTES.forEach((item) => {
+    if (item.category === 'Task') {
+      tasks++;
+    } else {
+      if (item.category === 'Random thought') {
+        rnd++;
+      } else {
+        ideas++;
+      }
+    }
+  });
+  return {
+    tasks,
+    rnd,
+    ideas,
+  };
+}
 
 app.use(express.json());
 
@@ -62,13 +81,22 @@ app.use(express.json());
 
 // NEED : GET /api/notes/:id - retrieve item && GET /api/notes/stats
 
-app.get('/api/notes', (req, res) => {
+app.get('/notes', (req, res) => {
   res.status(200).json(NOTES);
+});
+
+app.get('/notes/stats', (req, res) => {
+  let COUNTERS = countNotes();
+  res.status(200).json(COUNTERS);
+});
+
+app.get('/notes/:id', (req, res) => {
+  res.status(200).json(NOTES[req.params.id]);
 });
 
 //POST
 
-app.post('/api/notes', (req, res) => {
+app.post('/notes', (req, res) => {
   const note = { ...req.body, id: notesCounter };
   NOTES.push(note);
   notesCounter = NOTES.length;
@@ -76,11 +104,17 @@ app.post('/api/notes', (req, res) => {
 });
 
 //DELETE
-app.delete('/api/notes/:id', (req, res) => {
-  // NOTES = [...NOTES.slice(0, +req.params.id), ...NOTES.slice(+req.params.id + 1)];
-  NOTES = NOTES.filter((item) => item.id !== req.params.id);
+app.delete('/notes/:id', (req, res) => {
+  NOTES = [...NOTES.slice(0, +req.params.id), ...NOTES.slice(+req.params.id + 1)];
   notesCounter = NOTES.length;
   res.status(200).json({ message: `note ${req.params.id} was deleted` });
+});
+
+// PATCH
+
+app.patch('notes/:id', (req, res) => {
+  NOTES[+req.params.id].text = req.body.text;
+  res.status(200).json({ message: `item ${req.params.id} edited` });
 });
 
 //smth

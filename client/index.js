@@ -1,5 +1,6 @@
 let notes = [];
 getNotes();
+getStats();
 
 document.querySelector('.form').addEventListener('submit', (e) => {
   e.preventDefault();
@@ -12,23 +13,35 @@ document.querySelector('.form').addEventListener('submit', (e) => {
   let datePattern = /\d+\/\d+\/\d+/;
   elem.dates = datePattern.exec(data[0].value) || '-';
   e.target.elements[0].value = '';
-  console.log(elem);
   addNote(elem);
 });
 
 async function getNotes() {
-  notes = await fetch('/api/notes').then((res) => res.json());
+  notes = await fetch('/notes').then((res) => res.json());
   updateList();
+}
+
+async function getStats() {
+  stats = await fetch('/notes/stats').then((res) => res.json());
+  const { tasks, rnd, ideas } = stats;
+  const statsBlock = document.querySelector('.stats');
+  statsBlock.innerHTML = `<h2>tasks: ${tasks}, rnd: ${rnd}, ideas: ${ideas}</h2>`;
 }
 
 function updateList() {
   const list = document.querySelector('.note-list');
+
   let text = generateString();
   list.innerHTML = text;
   const deleteButtons = document.querySelectorAll('.delete');
   deleteButtons.forEach((item) => {
     const id = item.getAttribute('data-id');
     item.addEventListener('click', () => deleteNote(id));
+  });
+  const editButtons = document.querySelectorAll('.edit');
+  editButtons.forEach((item) => {
+    const id = item.getAttribute('data-id');
+    item.addEventListener('click', () => editNote(id));
   });
 }
 
@@ -37,16 +50,29 @@ function generateString() {
   notes.map(({ text, time, id, category, dates }) => {
     string += `<tr>
       <td>${time}</td><td class='text' >${text}</td><td>${category}</td><td>${dates}</td>
-      <td><button data-id='${id}' class="btn btn-danger delete">delete note</button></td>
+      <td>
+      <button data-id='${id}' class="btn btn-danger delete">delete note</button>
+      <button data-id='${id}' class="btn btn-secondary edit">edit note</button>
+      </td>
       </tr>`;
   });
 
   return string;
 }
+document.querySelector('.retrieve-item-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  let id = +e.target.elements[0].value;
+  if (!Number.isInteger(id)) {
+    alert('Enter only integer');
+  } else {
+    let elem = await fetch(`/notes/${id}`).then((res) => res.text());
+    alert(`Note - ${elem}`);
+  }
+});
 
 async function addNote(elem) {
   const data = { text: 'as', time: '1214', category: '', dates: '' };
-  const res = await fetch('/api/notes', {
+  const res = await fetch('/notes', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -54,11 +80,24 @@ async function addNote(elem) {
     body: JSON.stringify(elem),
   });
   getNotes();
+  getStats();
 }
 
 async function deleteNote(id) {
-  const res = await fetch(`/api/notes/${id}`, {
+  const res = await fetch(`/notes/${id}`, {
     method: 'DELETE',
+  });
+  getNotes();
+  getStats();
+}
+
+async function editNote(id) {
+  let text = prompt('new text');
+  await fetch(`/notes/${id}`, {
+    method: 'PATCH',
+    body: {
+      text,
+    },
   });
   getNotes();
 }
