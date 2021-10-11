@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+      integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <title>Node js App</title>
+  </head>
+  <body>
+    <h1>Notes using Rest Api</h1>
+    <table class="note-table">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Title</th>
+          <th>Category</th>
+          <th>Dates</th>
+          <th>Tools</th>
+        </tr>
+      </thead>
+      <tbody class="note-list"></tbody>
+    </table>
+    <button class="btn btn-success" onclick="getNotes()">get notes</button>
+    <form class="form" action="" ">
+      <h2>Create note</h2>
+      <div class="form-group">
+        <label for="note-content">Text of the note </label>
+        <input type="text" class="form-control" id="note-content" placeholder="Here" />
+        <label for="note-category">Select category</label>
+        <select id="note-category" class="form-control">
+          <option>Task</option>
+          <option>Random thought</option>
+          <option>Idea</option>
+        </select>
+      </div>
+      <button class="btn btn-outline-success" >add note</button>
+    </form>
+
+    <script src="index.js"></script>
+  </body>
+</html>
