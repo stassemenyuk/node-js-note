@@ -49,7 +49,7 @@ function generateString() {
   let string = '';
   notes.map(({ text, time, id, category, dates }) => {
     string += `<tr>
-      <td>${time}</td><td class='text' >${text} id:${id}</td><td>${category}</td><td>${dates}</td>
+      <td>${time}</td><td class='text' >${text} </td><td>${category}</td><td>${dates}</td>
       <td>
       <button data-id='${id}' class="btn btn-danger delete">delete note</button>
       <button data-id='${id}' class="btn btn-secondary edit">edit note</button>

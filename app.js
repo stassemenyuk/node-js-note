@@ -123,6 +123,11 @@ app.delete('/notes/:id', (req, res) => {
 
 app.patch('/notes/:id', (req, res) => {
   NOTES[+req.params.id].text = req.body.text;
+  let time = new Date().toLocaleTimeString();
+  NOTES[+req.params.id].time = time;
+  let datePattern = /\d+\/\d+\/\d+/;
+  let dates = datePattern.exec(text) || '-';
+  NOTES[+req.params.id].dates = dates;
   res.status(200).json({ message: `item ${req.params.id} edited` });
 });
 
