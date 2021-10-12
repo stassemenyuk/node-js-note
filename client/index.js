@@ -49,7 +49,7 @@ function generateString() {
   let string = '';
   notes.map(({ text, time, id, category, dates }) => {
     string += `<tr>
-      <td>${time}</td><td class='text' >${text}</td><td>${category}</td><td>${dates}</td>
+      <td>${time}</td><td class='text' >${text} id:${id}</td><td>${category}</td><td>${dates}</td>
       <td>
       <button data-id='${id}' class="btn btn-danger delete">delete note</button>
       <button data-id='${id}' class="btn btn-secondary edit">edit note</button>
@@ -67,6 +67,7 @@ document.querySelector('.retrieve-item-form').addEventListener('submit', async (
   } else {
     let elem = await fetch(`/notes/${id}`).then((res) => res.text());
     alert(`Note - ${elem}`);
+    e.target.elements[0].value = '';
   }
 });
 
@@ -93,11 +94,16 @@ async function deleteNote(id) {
 
 async function editNote(id) {
   let text = prompt('new text');
+  let obj = {
+    text,
+  };
+  console.log(text);
   await fetch(`/notes/${id}`, {
     method: 'PATCH',
-    body: {
-      text,
+    headers: {
+      'Content-Type': 'application/json',
     },
+    body: JSON.stringify(obj),
   });
   getNotes();
 }

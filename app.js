@@ -91,7 +91,11 @@ app.get('/notes/stats', (req, res) => {
 });
 
 app.get('/notes/:id', (req, res) => {
-  res.status(200).json(NOTES[req.params.id]);
+  if (req.params.id >= notesCounter) {
+    res.status(400).json('wrong id');
+  } else {
+    res.status(200).json(NOTES[req.params.id]);
+  }
 });
 
 //POST
@@ -105,14 +109,19 @@ app.post('/notes', (req, res) => {
 
 //DELETE
 app.delete('/notes/:id', (req, res) => {
-  NOTES = [...NOTES.slice(0, +req.params.id), ...NOTES.slice(+req.params.id + 1)];
+  NOTES = NOTES.filter((item) => item.id !== +req.params.id);
+  NOTES.forEach((item) => {
+    if (item.id >= req.params.id) {
+      item.id--;
+    }
+  });
   notesCounter = NOTES.length;
   res.status(200).json({ message: `note ${req.params.id} was deleted` });
 });
 
 // PATCH
 
-app.patch('notes/:id', (req, res) => {
+app.patch('/notes/:id', (req, res) => {
   NOTES[+req.params.id].text = req.body.text;
   res.status(200).json({ message: `item ${req.params.id} edited` });
 });
